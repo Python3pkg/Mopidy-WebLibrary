@@ -1,11 +1,11 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 
 import json
 import logging
 import os
 import re
 import sys
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from os.path import exists, isfile, join
 
@@ -257,7 +257,7 @@ class UploadHandler(tornado.web.RequestHandler):
                 return REDIRECT_ALLOW_TARGET.match(redirect)
             referer = self.request.headers['referer']
             if referer:
-                from urlparse import urlparse
+                from urllib.parse import urlparse
                 parts = urlparse(referer)
                 redirect_allow_target = '^' + re.escape(
                     parts.scheme + '://' + parts.netloc + '/'
@@ -288,7 +288,7 @@ class UploadHandler(tornado.web.RequestHandler):
                 result = {}
                 result['size'] = self.get_file_size(file['body'])
                 result['path'] = path
-                result['name'] = urllib.unquote(file['filename'])
+                result['name'] = urllib.parse.unquote(file['filename'])
                 if self.validate(result):
                     key = self.write_blob(
                         file['body'],
@@ -309,7 +309,7 @@ class UploadHandler(tornado.web.RequestHandler):
         redirect = self.get_argument('redirect', '')
         if self.validate_redirect(redirect):
             return self.redirect(str(
-                redirect.replace('%s', urllib.quote(s, ''), 1)
+                redirect.replace('%s', urllib.parse.quote(s, ''), 1)
             ))
         if 'application/json' in self.request.headers.get('Accept'):
             self.add_header('Content-Type', 'application/json')
@@ -319,7 +319,7 @@ class UploadHandler(tornado.web.RequestHandler):
 class FilesHandler(tornado.web.RequestHandler):
 
     def normalize(self, str):
-        return urllib.quote(urllib.unquote(str), '')
+        return urllib.parse.quote(urllib.parse.unquote(str), '')
 
     def get(self):
         file_name = self.get_argument('file')

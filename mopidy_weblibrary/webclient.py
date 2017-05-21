@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function, unicode_literals
+
 
 import logging
 
@@ -21,7 +21,7 @@ class Webclient(object):
         return Extension.version
 
     def get_media_dirs_config(self):
-        dirs = list(self.config.get(u'file', {}).get(u'media_dirs', []))
+        dirs = list(self.config.get('file', {}).get('media_dirs', []))
         directories = []
         for d in dirs:
             directories.append(d.split("|")[0])
